@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "758433065251",
+    "project_id": "kangleimart-2bf1f",
+    "storage_bucket": "kangleimart-2bf1f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:758433065251:android:e3e376dc56645f8ba78496",
+        "android_client_info": {
+          "package_name": "com.kangleiinovations.kangleimart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbHMg0TB3zuKdDaX6R28pmV_OSBN-VbHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:758433065251:android:89b224826d5256b0a78496",
+        "android_client_info": {
+          "package_name": "com.kangleiinovations.kangleimartadmin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbHMg0TB3zuKdDaX6R28pmV_OSBN-VbHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
