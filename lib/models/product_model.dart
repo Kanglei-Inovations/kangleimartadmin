@@ -62,22 +62,22 @@ class ProductModel {
   }
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'stock': stock,
-      'sku': sku,
-      'price': price,
-      'title': title,
-      'date': date?.toIso8601String(),
-      'salesPrice': salesPrice,
-      'thumbnail': thumbnail,
-      'isFeatured': isFeatured,
-      'brand': brand?.toJson(),
-      'description': description,
-      'categoryId': categoryId,
-      'images': images,
-      'productType': productType,
-      'productAttributes': productAttributes?.map((e) => e.toJson()).toList(),
-      'productVariations': productVariations?.map((e) => e.toJson()).toList(),
+      'Id': id,
+      'Stock': stock,
+      'SKU': sku,
+      'Price': price,
+      'Title': title,
+      'Date': date?.toIso8601String(),
+      'SalesPrice': salesPrice,
+      'Thumbnail': thumbnail,
+      'IsFeatured': isFeatured,
+      'Brand': brand?.toJson(),
+      'Description': description,
+      'CategoryId': categoryId,
+      'Images': images,
+      'ProductType': productType,
+      'ProductAttributes': productAttributes?.map((e) => e.toJson()).toList(),
+      'ProductVariations': productVariations?.map((e) => e.toJson()).toList(),
     };
   }
   factory ProductModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document) {
