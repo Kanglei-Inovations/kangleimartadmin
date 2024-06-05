@@ -3,17 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../models/brand_model.dart';
-import '../providers/brand_provider.dart';
+import '../models/category_model.dart';
+import '../providers/category_provider.dart';
 
-class AddBrandScreen extends StatefulWidget {
-  static const routeName = '/add-brand';
+class AddCategoryScreen extends StatefulWidget {
+  static const routeName = '/add-category';
 
   @override
-  _AddBrandScreenState createState() => _AddBrandScreenState();
+  _AddCategoryScreenState createState() => _AddCategoryScreenState();
 }
 
-class _AddBrandScreenState extends State<AddBrandScreen> {
+class _AddCategoryScreenState extends State<AddCategoryScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   bool _isFeatured = false;
@@ -33,15 +33,15 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
 
   void _submit() async {
     if (_formKey.currentState!.validate() && _imageFile != null) {
-      final brandProvider = Provider.of<BrandProvider>(context, listen: false);
-      String imageUrl = await brandProvider.uploadImage(_imageFile!.path);
-      final newBrand = BrandModel(
+      final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+      String imageUrl = await categoryProvider.uploadImage(_imageFile!.path);
+      final newCategory = CategoryModel(
         id: '',
         name: _nameController.text,
         image: imageUrl,
         isFeatured: _isFeatured,
       );
-      await brandProvider.addBrand(newBrand);
+      await categoryProvider.addCategory(newCategory);
       Navigator.of(context).pop();
     } else if (_imageFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please select an image')));
@@ -52,7 +52,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Brand'),
+        title: Text('Add Category'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -96,7 +96,7 @@ class _AddBrandScreenState extends State<AddBrandScreen> {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _submit,
-                child: Text('Add Brand'),
+                child: Text('Add Category'),
               ),
             ],
           ),

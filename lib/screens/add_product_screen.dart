@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -20,8 +19,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _priceController = TextEditingController();
   final _categoryController = TextEditingController();
   final _stockController = TextEditingController();
-  final _ratingController = TextEditingController();
-  List<String> _imagePaths = []; // Updated to store multiple image paths
+  List<String> _imagePaths = [];
 
   final ImagePicker _picker = ImagePicker();
 
@@ -38,25 +36,24 @@ class _AddProductScreenState extends State<AddProductScreen> {
     if (_formKey.currentState!.validate() && _imagePaths.isNotEmpty) {
       _formKey.currentState!.save();
       final newProduct = ProductModel(
-        id: '', // This will be generated automatically by Firestore
+        id: '',
         title: _titleController.text,
         description: _descriptionController.text,
         price: double.parse(_priceController.text),
-        thumbnail: '', // Temporary placeholder, will be replaced by the actual URL after upload
+        thumbnail: '',
         stock: int.parse(_stockController.text),
-        salesPrice: 0, // You can set this value as needed
-        isFeatured: false, // You can set this value as needed
-        brand: null, // You can set this value as needed
+        salesPrice: 0,
+        isFeatured: false,
+        brand: null,
         categoryId: _categoryController.text,
-        images: [], // Updated to include multiple images
-        productType: '', // You can set this value as needed
-        productAttributes: [], // Initially, no attributes are added
-        productVariations: [], // Initially, no variations are added
+        images: _imagePaths,
+        productType: '',
+        productAttributes: [],
+        productVariations: [],
       );
-      await Provider.of<ProductProvider>(context, listen: false).addProduct(newProduct,_imagePaths);
+      await Provider.of<ProductProvider>(context, listen: false).addProduct(newProduct, _imagePaths);
       Navigator.of(context).pop();
     } else {
-      // Handle case where images are not selected
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please select at least one image')));
     }
   }
@@ -107,13 +104,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   return null;
                 },
               ),
-              // Image picker
               ElevatedButton(
                 onPressed: _pickImages,
                 child: Text('Pick Images'),
               ),
               Container(
-                height: 120, // Specify a fixed height for the container
+                height: 120,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: _imagePaths.length,
@@ -130,8 +126,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   },
                 ),
               ),
-
-              SizedBox(width: 10),
               TextFormField(
                 controller: _categoryController,
                 decoration: InputDecoration(labelText: 'Category'),
@@ -149,20 +143,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the stock quantity';
-                  }
-                  if (int.tryParse(value) == null) {
-                    return 'Please enter a valid number';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _ratingController,
-                decoration: InputDecoration(labelText: 'Rating'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a rating';
                   }
                   if (int.tryParse(value) == null) {
                     return 'Please enter a valid number';

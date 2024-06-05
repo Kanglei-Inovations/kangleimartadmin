@@ -1,21 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class BrandModel {
+class CategoryModel {
   String id;
   String name;
   String image;
   bool? isFeatured;
 
-  BrandModel({
+  CategoryModel({
     required this.id,
     required this.name,
     required this.image,
     this.isFeatured,
   });
 
-  // Factory constructor to create an empty BrandModel
-  factory BrandModel.empty() {
-    return BrandModel(
+  // Factory constructor to create an empty CategoryModel
+  factory CategoryModel.empty() {
+    return CategoryModel(
       id: '',
       name: '',
       image: '',
@@ -23,7 +23,7 @@ class BrandModel {
     );
   }
 
-  // Method to convert a BrandModel to a JSON map
+  // Method to convert a CategoryModel to a JSON map
   Map<String, dynamic> toJson() {
     return {
       'Id': id,
@@ -33,9 +33,9 @@ class BrandModel {
     };
   }
 
-  // Factory constructor to create a BrandModel from a JSON map
-  factory BrandModel.fromJson(Map<String, dynamic> json) {
-    return BrandModel(
+  // Factory constructor to create a CategoryModel from a JSON map
+  factory CategoryModel.fromJson(Map<String, dynamic> json) {
+    return CategoryModel(
       id: json['Id'] ?? '',
       name: json['Name'] ?? '',
       image: json['Image'] ?? '',
@@ -43,17 +43,17 @@ class BrandModel {
     );
   }
 
-  // Factory constructor to create a BrandModel from a Firestore document snapshot
-  factory BrandModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot) {
+  // Factory constructor to create a CategoryModel from a Firestore document snapshot
+  factory CategoryModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> snapshot) {
     final data = snapshot.data();
     if (data != null) {
-      return BrandModel(
+      return CategoryModel(
         id: snapshot.id,
         name: data['Name'] ?? '',
         image: data['Image'] ?? '',
         isFeatured: data['IsFeatured'] ?? false,
       );
     }
-    return BrandModel.empty();
+    return CategoryModel.empty();
   }
 }

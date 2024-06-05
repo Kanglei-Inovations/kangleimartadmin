@@ -7,6 +7,7 @@ import 'package:kangleimartadmin/firebase_options.dart';
 import 'package:kangleimartadmin/providers/auth_provider.dart';
 import 'package:kangleimartadmin/providers/product_provider.dart';
 import 'package:kangleimartadmin/screens/add_product_screen.dart';
+import 'package:kangleimartadmin/screens/category_screen.dart';
 import 'package:kangleimartadmin/screens/home_screen.dart';
 import 'package:kangleimartadmin/screens/login_screen.dart';
 import 'package:kangleimartadmin/screens/product_screen.dart';
@@ -14,7 +15,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'providers/brand_provider.dart';
+import 'providers/category_provider.dart';
 import 'screens/add_brand_screen.dart';
+import 'screens/add_category_screen.dart';
 import 'screens/brand_screen.dart';
 
 
@@ -41,6 +44,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProviders()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => BrandProvider()),
+        ChangeNotifierProvider(create: (_) => CategoryProvider()),
       ],
       child: MaterialApp(
         title: 'KangleiMart Admin',
@@ -53,8 +57,10 @@ class MyApp extends StatelessWidget {
           '/login': (ctx) => LoginScreen(),
           '/brands': (ctx) => BrandScreen(),
           '/products': (ctx) => ProductScreen(),
+          '/categories' : (ctx) => CategoryScreen(),
           AddBrandScreen.routeName: (ctx) => AddBrandScreen(),
           AddProductScreen.routeName: (ctx) => AddProductScreen(),
+          AddCategoryScreen.routeName: (ctx) => AddCategoryScreen(),
         },
       ),
     );

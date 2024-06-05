@@ -18,6 +18,7 @@ class ProductProvider with ChangeNotifier {
     return _db.collection('products').snapshots().map((snapshot) =>
         snapshot.docs.map((doc) => ProductModel.fromSnapshot(doc)).toList());
   }
+
   Future<void> addProduct(ProductModel product, List<String> imagePaths) async {
     try {
       // Upload the images to Firebase Storage
@@ -29,7 +30,7 @@ class ProductProvider with ChangeNotifier {
         'Images': imageUrls,
         'CreatedAt': FieldValue.serverTimestamp(), // Set the server timestamp
       });
-      // Update the local list of brands
+      // Update the local list of products
       notifyListeners();
     } catch (e) {
       print('Error adding product: $e');
