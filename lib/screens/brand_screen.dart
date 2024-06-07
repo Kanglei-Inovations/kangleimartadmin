@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/brand_provider.dart';
@@ -58,7 +59,7 @@ class BrandItem extends StatelessWidget {
       elevation: 4,
       child: ListTile(
         leading: brand.image.isNotEmpty
-            ? Image.network(
+            ? CachedNetworkImage( imageUrl:
           brand.image,
           width: 50,
           height: 50,

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/category_provider.dart';
@@ -58,11 +59,11 @@ class CategoryItem extends StatelessWidget {
       elevation: 4,
       child: ListTile(
         leading: category.image.isNotEmpty
-            ? Image.network(
-          category.image,
+            ? CachedNetworkImage(
+
           width: 50,
           height: 50,
-          fit: BoxFit.cover,
+          fit: BoxFit.cover, imageUrl: category.image,
         )
             : Icon(Icons.category, size: 50),
         title: Text(category.name, style: TextStyle(fontWeight: FontWeight.bold)),

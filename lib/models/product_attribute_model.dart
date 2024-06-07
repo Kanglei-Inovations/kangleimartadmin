@@ -1,6 +1,6 @@
 class ProductAttributeModel {
   String? name;
-  final List<String>? values;
+  List<String>? values;
 
   ProductAttributeModel({this.name, required this.values});
 

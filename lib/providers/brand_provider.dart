@@ -8,6 +8,7 @@ class BrandProvider with ChangeNotifier {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   List<BrandModel> _brands = [];
+  Map<String, String> _brandImages = {}; // Cache brand images
 
   List<BrandModel> get brands => _brands;
 
@@ -58,4 +59,20 @@ class BrandProvider with ChangeNotifier {
     String downloadUrl = await snapshot.ref.getDownloadURL();
     return downloadUrl;
   }
+  Future<String> getBrandImage(String brandId) async {
+    if (_brandImages.containsKey(brandId)) {
+      return _brandImages[brandId]!;
+    } else {
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+      await _db.collection('brands').doc(brandId).get();
+      if (snapshot.exists) {
+        BrandModel brand = BrandModel.fromSnapshot(snapshot);
+        _brandImages[brandId] = brand.image;
+        return brand.image;
+      } else {
+        return '';
+      }
+    }
+  }
+
 }

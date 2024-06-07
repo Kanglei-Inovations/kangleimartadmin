@@ -9,11 +9,11 @@ class ProductModel {
   String? sku;
   double price;
   String title;
-  DateTime? date;
+
   double salesPrice;
   String thumbnail;
-  bool? isFeatured;
-  BrandModel? brand;
+  bool isFeatured;
+  String? brandId;
   String? description;
   String? categoryId;
   List<String>? images;
@@ -27,11 +27,11 @@ class ProductModel {
     this.sku,
     required this.price,
     required this.title,
-    this.date,
+
     required this.salesPrice,
     required this.thumbnail,
-    this.isFeatured,
-    this.brand,
+    this.isFeatured = true,
+    this.brandId,
     this.description,
     this.categoryId,
     this.images,
@@ -47,11 +47,11 @@ class ProductModel {
       sku: null,
       price: 0.0,
       title: '',
-      date: null,
+
       salesPrice: 0.0,
       thumbnail: '',
       isFeatured: false,
-      brand: null,
+      brandId: '',
       description: '',
       categoryId: '',
       images: [],
@@ -62,22 +62,22 @@ class ProductModel {
   }
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'stock': stock,
-      'sku': sku,
-      'price': price,
-      'title': title,
-      'date': date?.toIso8601String(),
-      'salesPrice': salesPrice,
-      'thumbnail': thumbnail,
-      'isFeatured': isFeatured,
-      'brand': brand?.toJson(),
-      'description': description,
-      'categoryId': categoryId,
-      'images': images,
-      'productType': productType,
-      'productAttributes': productAttributes?.map((e) => e.toJson()).toList(),
-      'productVariations': productVariations?.map((e) => e.toJson()).toList(),
+      'Id': id,
+      'Stock': stock,
+      'SKU': sku,
+      'Price': price,
+      'Title': title,
+
+      'SalesPrice': salesPrice,
+      'Thumbnail': thumbnail,
+      'IsFeatured': isFeatured,
+      'BrandId': brandId,
+      'Description': description,
+      'CategoryId': categoryId,
+      'Images': images,
+      'ProductType': productType,
+      'ProductAttributes': productAttributes?.map((e) => e.toJson()).toList(),
+      'ProductVariations': productVariations?.map((e) => e.toJson()).toList(),
     };
   }
   factory ProductModel.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> document) {
@@ -88,11 +88,11 @@ class ProductModel {
       sku: data['SKU'],
       price: (data['Price'] ?? 0.0).toDouble(),
       title: data['Title'] ?? '',
-      date: (data['Date'] as Timestamp?)?.toDate(),
+
       salesPrice: (data['SalesPrice'] ?? 0.0).toDouble(),
       thumbnail: data['Thumbnail'] ?? '',
       isFeatured: data['IsFeatured'] ?? false,
-      brand: data['Brand'] != null ? BrandModel.fromJson(data['Brand']) : null,
+      brandId:  data['BrandId'] ?? '',
       description: data['Description'] ?? '',
       categoryId: data['CategoryId'] ?? '',
       images: (data['Images'] as List<dynamic>?)?.cast<String>(),
