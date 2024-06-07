@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../const/enums.dart';
 import '../models/product_model.dart';
 import '../providers/product_provider.dart';
 
@@ -49,6 +50,7 @@ class SingleProductScreen extends StatelessWidget {
                       itemBuilder: (_, index) {
                         return CachedNetworkImage(
                           imageUrl: product.images![index],
+
                           fit: BoxFit.cover,
                         );
                       },
@@ -181,11 +183,44 @@ class SingleProductScreen extends StatelessWidget {
                     },
                   ),
                   SizedBox(height: 16),
-                  Text(
-                    'Variations:',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+
+                  if(product.productType == ProductType.variable.toString())
+                    Text(
+                      'Variations',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.black12,
+                    ),
+                    child: Column(
+                      children: [
+                        // Row(
+                        //   children: [
+                        //     Column(
+                        //       crossAxisAlignment: CrossAxisAlignment.start,
+                        //       children: product.productAttributes!
+                        //         .map((attribute) => Column(
+                        //         crossAxisAlignment: CrossAxisAlignment.start,
+                        //         children: [
+                        //           Wrap(
+                        //             spacing: 8,
+                        //             children: [
+                        //               Text('Red')
+                        //             ],
+                        //           )
+                        //         ],
+                        //       ))
+                        //     )
+                        //   ],
+                        // )
+                      ],
+                    ),
                   ),
+                  if(product.productType == ProductType.variable.toString())
                   SizedBox(height: 8),
+                  if(product.productType == ProductType.variable.toString())
                   Container(
                     height: 200, // Adjust the height as needed
                     child: ListView.builder(
