@@ -107,11 +107,6 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
-  double getDiscountPercentage(ProductModel product) {
-    if (product.salesPrice != null && product.salesPrice! < product.price) {
-      return ((product.price - product.salesPrice!) / product.price) * 100;
-    }
-    return 0;
-  }
+
 
 }

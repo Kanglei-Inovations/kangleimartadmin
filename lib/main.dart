@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:kangleimartadmin/firebase_options.dart';
 import 'package:kangleimartadmin/providers/auth_provider.dart';
 import 'package:kangleimartadmin/providers/product_provider.dart';
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BrandProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
       ],
-      child: MaterialApp(
+      child: GetMaterialApp(
         title: 'KangleiMart Admin',
         theme: ThemeData(
           primarySwatch: Colors.blue,
