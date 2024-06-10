@@ -88,6 +88,7 @@ class SingleProductScreen extends StatelessWidget {
                               ),
                             ),
 
+
                         ],
                       ),
 

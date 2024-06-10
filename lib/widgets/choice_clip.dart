@@ -74,7 +74,7 @@ class KChoiceClip extends StatelessWidget {
         )
             : null,
         labelPadding: isColor ? EdgeInsets.all(0) : null,
-        padding: isColor ? EdgeInsets.all(8.0) : null,
+        padding: isColor ? EdgeInsets.all(0.0) : null,
         shape: isColor ? const CircleBorder() : null,
         backgroundColor: isColor ? HelperFunctions.getColor(text) : null,
       ),
