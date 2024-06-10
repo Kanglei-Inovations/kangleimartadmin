@@ -47,6 +47,7 @@ dependencies:
   intl:
   cached_network_image: ^3.3.1
   image_picker:
+  readmore: ^2.1.0
 
 
 dev_dependencies:

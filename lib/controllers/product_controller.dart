@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kangleimartadmin/models/product_model.dart';
 
@@ -8,7 +9,7 @@ class ProductController extends GetxController {
     double smallestPrice = double.infinity;
     double largestPrice = 0.0;
     if (product.productType == ProductType.single.toString()) {
-      return (product.salesPrice > 0 ? product.salesPrice : product.price)
+      return (product.salesPrice > 0 ? '₹${product.salesPrice}' : '₹${product.price}')
           .toString();
     } else {
       for (var variation in product.productVariations!) {
@@ -24,7 +25,7 @@ class ProductController extends GetxController {
       if (smallestPrice.isEqual(largestPrice)) {
         return largestPrice.toString();
       } else {
-        return '$smallestPrice - $largestPrice';
+        return '₹$smallestPrice - ₹$largestPrice';
       }
     }
   }
@@ -38,6 +39,10 @@ class ProductController extends GetxController {
   //Check Product Variation Stock Status
   String getProductStockStatus(int stock) {
     return stock > 0 ? 'In Stock' : 'Out of Stock';
+  }
+  //Check Product Variation Stock Status
+  Status(int stock) {
+    return stock > 0 ? Colors.green : 'Colors.red';
   }
 
 }
