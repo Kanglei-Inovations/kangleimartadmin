@@ -20,7 +20,7 @@ class ProductDetailImageSlider extends StatelessWidget {
     final controller = Get.put(ImageControllerProductScreen());
     final images = controller.getAllProductImages(product);
     return Container(
-      height: 400,
+      height: 300,
       child: Stack(
         children: [
           SizedBox(

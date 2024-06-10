@@ -60,4 +60,6 @@ class VariationController extends GetxController {
     variationStockStatus.value = '';
     selectedVariation.value = ProductVariationModel.empty();
   }
+
+
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:kangleimartadmin/screens/product_review.dart';
 
 import 'add_category_screen.dart';
 import 'add_product_screen.dart';
@@ -64,6 +66,13 @@ class HomeScreen extends StatelessWidget {
               label: 'Customer',
               onTap: () {
                 Navigator.of(context).pushNamed(ProductScreen.routeName);
+              },
+            ),
+            HomeButton(
+              icon: Icons.supervised_user_circle,
+              label: 'Review And Ratings',
+              onTap: () {
+                Get.to(ProductReviewScreen());
               },
             ),
           ],
