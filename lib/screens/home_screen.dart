@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kangleimartadmin/screens/product_review.dart';
 
+import '../widgets/try_attribute_variation_adding.dart';
 import 'add_category_screen.dart';
 import 'add_product_screen.dart';
 import 'brand_screen.dart';
@@ -73,6 +74,14 @@ class HomeScreen extends StatelessWidget {
               label: 'Review And Ratings',
               onTap: () {
                 Get.to(ProductReviewScreen());
+              },
+            ),
+
+            HomeButton(
+              icon: Icons.supervised_user_circle,
+              label: 'Attribute and Variation',
+              onTap: () {
+                Get.to(ProductVariationWidget());
               },
             ),
           ],
