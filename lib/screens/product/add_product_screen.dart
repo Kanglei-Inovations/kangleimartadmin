@@ -134,6 +134,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     if (pickedFiles != null) {
       setState(() {
         _imagePaths = pickedFiles.map((file) => file.path).toList();
+        print(_imagePaths);
       });
     }
   }
