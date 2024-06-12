@@ -32,7 +32,7 @@ class ProductDetailImageSlider extends StatelessWidget {
                   final image = selectedProductImage.value; // Use selectedProductImage
                   return GestureDetector(
                     onTap: () => controller.showEnlargedImage(image),
-                    child: NetworkImage(image: image),
+                    child: NetworkImageWidget(image: image),
                   );
                 }),
               ),
@@ -64,12 +64,8 @@ class ProductDetailImageSlider extends StatelessWidget {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(15),
-                      child: CachedNetworkImage(
-                        progressIndicatorBuilder: (context, url, downloadProgress) =>
-                            Center(child: CircularProgressIndicator(value: downloadProgress.progress, color: Colors.green)),
-                        imageUrl: images[index],
-                        fit: BoxFit.cover,
-                      ),
+                      child: NetworkImageWidget(image: images[index]),
+
                     ),
                   ),
                 ),
