@@ -1,16 +1,15 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-import '../models/brand_model.dart';
-import '../models/category_model.dart';
-import '../models/product_attribute_model.dart';
-import '../models/product_variation_model.dart';
-import '../providers/brand_provider.dart';
-import '../providers/category_provider.dart';
-import '../providers/product_provider.dart';
-import '../models/product_model.dart';
+import '../../models/brand_model.dart';
+import '../../models/category_model.dart';
+import '../../models/product_attribute_model.dart';
+import '../../models/product_model.dart';
+import '../../models/product_variation_model.dart';
+import '../../providers/brand_provider.dart';
+import '../../providers/category_provider.dart';
+import '../../providers/product_provider.dart';
 
 class AddProductScreen extends StatefulWidget {
   static const routeName = '/add-product';
@@ -32,13 +31,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
   List<String> _imagePaths = [];
   final ImagePicker _picker = ImagePicker();
   bool _isFeatured = false;
+  String productType = 'ProductType.single';
 
-  String productType = 'single';
-// Define controllers for attribute inputs
   final List<ProductAttributeModel> attributes = [];
   final List<ProductVariationModel> variations = [];
   final TextEditingController attributeNameController = TextEditingController();
-  final TextEditingController attributeValuesController = TextEditingController();
+  final TextEditingController attributeValuesController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -55,7 +54,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   void addAttribute() {
     final name = attributeNameController.text.trim();
-    final values = attributeValuesController.text.split(',').map((e) => e.trim()).toList();
+    final values =
+        attributeValuesController.text.split(',').map((e) => e.trim()).toList();
 
     if (name.isNotEmpty && values.isNotEmpty) {
       setState(() {
@@ -69,17 +69,22 @@ class _AddProductScreenState extends State<AddProductScreen> {
   void removeAttribute(int index) {
     setState(() {
       attributes.removeAt(index);
-      variations.removeAt(index);
     });
   }
 
   void generateVariations() {
     final List<ProductVariationModel> newVariations = [];
-    final Map<String, List<String>> attributeMap = {for (var attr in attributes) attr.name!: attr.values!};
+    final Map<String, List<String>> attributeMap = {
+      for (var attr in attributes) attr.name!: attr.values!
+    };
     final combinations = generateCombinations(attributeMap);
+    int idCounter = 0;
 
     for (var combination in combinations) {
-      newVariations.add(ProductVariationModel(id: generateId(), attributeValues: combination));
+      final id = idCounter.toString(); // Sequential IDs starting from 0
+      idCounter++;
+      newVariations
+          .add(ProductVariationModel(id: id, attributeValues: combination));
     }
 
     setState(() {
@@ -88,7 +93,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
     });
   }
 
-  List<Map<String, String>> generateCombinations(Map<String, List<String>> attributeMap) {
+  List<Map<String, String>> generateCombinations(
+      Map<String, List<String>> attributeMap) {
     if (attributeMap.isEmpty) return [];
 
     final keys = attributeMap.keys.toList();
@@ -111,12 +117,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
     return results;
   }
 
-  String generateId() {
-    return Random().nextInt(1000000).toString();
+  String generateIdFromCombination(Map<String, String> combination) {
+    String id = '';
+    for (var attribute in attributes) {
+      final attributeName = attribute.name!;
+      final attributeValue = combination[attributeName];
+      final index = attribute.values!.indexOf(attributeValue!);
+      id += index.toString();
+    }
+    return id;
   }
-
-
-
 
   Future<void> _pickImages() async {
     final pickedFiles = await _picker.pickMultiImage();
@@ -130,30 +140,49 @@ class _AddProductScreenState extends State<AddProductScreen> {
   void _submit() async {
     if (_formKey.currentState!.validate() && _imagePaths.isNotEmpty) {
       _formKey.currentState!.save();
+
+      double? price;
+      double? salesPrice;
+      int? stock;
+
+      if (productType == 'ProductType.single') {
+        price = double.parse(_priceController.text);
+        salesPrice = double.parse(_salespriceController.text);
+        stock = int.parse(_stockController.text);
+      } else if (productType == 'ProductType.variable') {
+        price = null; // No overall price for variable products
+        salesPrice = null; // No overall sales price for variable products
+        stock = null;
+      }
+
       final newProduct = ProductModel(
         id: '',
-        sku: _skuController.text,
+        sku: productType == 'ProductType.single' ? _skuController.text : '',
         title: _titleController.text,
         description: _descriptionController.text,
-        price: double.parse(_priceController.text),
+        price: price ?? 0.0,
         thumbnail: '',
-        stock: int.parse(_stockController.text),
-        salesPrice: double.parse(_salespriceController.text),
+        stock: stock ?? 0,
+        salesPrice: salesPrice ?? 0.0,
         isFeatured: _isFeatured,
         brandId: _brandCategory,
         categoryId: _selectedCategory,
         images: [],
-        productType: '',
+        productType: productType,
         productAttributes: attributes,
         productVariations: variations,
       );
-      await Provider.of<ProductProvider>(context, listen: false).addProduct(newProduct, _imagePaths);
+
+      print(newProduct.toJson());
+      await Provider.of<ProductProvider>(context, listen: false)
+          .addProduct(newProduct, _imagePaths);
       Navigator.of(context).pop();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please select at least one image')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please Enter all Required field')),
+      );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +197,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
           child: ListView(
             children: <Widget>[
               SwitchListTile(
-                title: Text('Visible', style: TextStyle(fontWeight: FontWeight.bold),),
+                title: Text(
+                  'Visible',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
                 value: _isFeatured,
                 onChanged: (bool value) {
                   setState(() {
@@ -197,7 +229,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 },
               ),
               StreamBuilder<List<CategoryModel>>(
-                stream: Provider.of<CategoryProvider>(context).streamCategories(),
+                stream:
+                    Provider.of<CategoryProvider>(context).streamCategories(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());
@@ -263,52 +296,53 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 },
               ),
 
-
               SizedBox(height: 20),
-              Text('All Product Images', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('All Product Images',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               SizedBox(height: 5),
-        Container(
-          height: 120,
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: _pickImages,
-                child: Container(
-                  width: 50,
-                  height: 100,
-                  color: Colors.grey[300],
-                  child: Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
-                ),
+              Container(
+                height: 120,
+                child: Row(children: [
+                  GestureDetector(
+                    onTap: _pickImages,
+                    child: Container(
+                      width: 50,
+                      height: 100,
+                      color: Colors.grey[300],
+                      child:
+                          Icon(Icons.add_a_photo, size: 40, color: Colors.grey),
+                    ),
+                  ),
+                  Flexible(
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _imagePaths.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.file(
+                            File(_imagePaths[index]),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.fill,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ]),
               ),
-              Flexible(
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _imagePaths.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Image.file(
-                        File(_imagePaths[index]),
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.fill,
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-  ]
-      ),
-        ),
               SizedBox(height: 5),
-              Text('Product Type', style: TextStyle(fontWeight: FontWeight.bold),),
+              Text(
+                'Product Type',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               Row(
                 children: [
                   Expanded(
                     child: RadioListTile(
                       title: Text('Single'),
-                      value: 'single',
+                      value: 'ProductType.single',
                       groupValue: productType,
                       onChanged: (value) {
                         setState(() {
@@ -320,7 +354,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   Expanded(
                     child: RadioListTile(
                       title: Text('Variable'),
-                      value: 'variable',
+                      value: 'ProductType.variable',
                       groupValue: productType,
                       onChanged: (value) {
                         setState(() {
@@ -332,65 +366,65 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 ],
               ),
 
-              if (productType == 'single')
-              TextFormField(
-                controller: _skuController,
-                decoration: InputDecoration(labelText: 'SKU Code'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a SKU Code';
-                  }
-                  return null;
-                },
-              ),
-              if (productType == 'single')
+              if (productType == 'ProductType.single')
                 TextFormField(
-                controller: _priceController,
-                decoration: InputDecoration(labelText: 'MRP Price'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a price';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Please enter a valid number';
-                  }
-                  return null;
-                },
-              ),
-              if (productType == 'single')
+                  controller: _skuController,
+                  decoration: InputDecoration(labelText: 'SKU Code'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a SKU Code';
+                    }
+                    return null;
+                  },
+                ),
+              if (productType == 'ProductType.single')
                 TextFormField(
-                controller: _salespriceController,
-                decoration: InputDecoration(labelText: 'Sales/Offer Price'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a sale price';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Please enter a valid number';
-                  }
-                  return null;
-                },
-              ),
-              if (productType == 'single')
+                  controller: _priceController,
+                  decoration: InputDecoration(labelText: 'MRP Price'),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a price';
+                    }
+                    if (double.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
+                ),
+              if (productType == 'ProductType.single')
                 TextFormField(
-                controller: _stockController,
-                decoration: InputDecoration(labelText: 'Stock'),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the stock quantity';
-                  }
-                  if (int.tryParse(value) == null) {
-                    return 'Please enter a valid number';
-                  }
-                  return null;
-                },
-              ),
+                  controller: _salespriceController,
+                  decoration: InputDecoration(labelText: 'Sales/Offer Price'),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a sale price';
+                    }
+                    if (double.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
+                ),
+              if (productType == 'ProductType.single')
+                TextFormField(
+                  controller: _stockController,
+                  decoration: InputDecoration(labelText: 'Stock'),
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter the stock quantity';
+                    }
+                    if (int.tryParse(value) == null) {
+                      return 'Please enter a valid number';
+                    }
+                    return null;
+                  },
+                ),
 
               Visibility(
-                visible: productType == 'variable',
+                visible: productType == 'ProductType.variable',
                 child: Column(
                   children: [
                     Row(
@@ -398,14 +432,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         Expanded(
                           child: TextField(
                             controller: attributeNameController,
-                            decoration: InputDecoration(labelText: 'Attribute Name (e.g., Color)'),
+                            decoration: InputDecoration(
+                                labelText: 'Attribute Name (e.g., Color)'),
                           ),
                         ),
                         SizedBox(width: 10),
                         Expanded(
                           child: TextField(
                             controller: attributeValuesController,
-                            decoration: InputDecoration(labelText: 'Attributes (e.g., Green, Blue, Red)'),
+                            decoration: InputDecoration(
+                                labelText:
+                                    'Attributes (e.g., Green, Blue, Red)'),
                           ),
                         ),
                         IconButton(
@@ -420,7 +457,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       itemBuilder: (context, index) {
                         final attribute = attributes[index];
                         return ListTile(
-                          title: Text('${attribute.name} (${attribute.values!.join(', ')})'),
+                          title: Text(
+                              '${attribute.name} (${attribute.values!.join(', ')})'),
                           trailing: IconButton(
                             icon: Icon(Icons.delete),
                             onPressed: () => removeAttribute(index),
@@ -440,38 +478,52 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       itemBuilder: (context, index) {
                         final variation = variations[index];
                         return ExpansionTile(
-                          title: Text('Product ${index + 1}: ${variation.attributeValues.entries.map((e) => '${e.key}: ${e.value}').join(', ')}', style: TextStyle(fontWeight: FontWeight.bold),),
+                          title: Text(
+                            'Product ${index + 1}: ${variation.attributeValues.entries.map((e) => '${e.key}: ${e.value}').join(', ')}',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
                                 children: [
                                   TextField(
-                                    decoration: InputDecoration(labelText: 'SKU'),
+                                    decoration:
+                                        InputDecoration(labelText: 'SKU'),
                                     onChanged: (value) => variation.sku = value,
                                   ),
                                   TextField(
-                                    decoration: InputDecoration(labelText: 'Image URL'),
-                                    onChanged: (value) => variation.image = value,
+                                    decoration:
+                                        InputDecoration(labelText: 'Image URL'),
+                                    onChanged: (value) =>
+                                        variation.image = value,
                                   ),
                                   TextField(
-                                    decoration: InputDecoration(labelText: 'Description'),
-                                    onChanged: (value) => variation.description = value,
+                                    decoration: InputDecoration(
+                                        labelText: 'Description'),
+                                    onChanged: (value) =>
+                                        variation.description = value,
                                   ),
                                   TextField(
-                                    decoration: InputDecoration(labelText: 'Price'),
+                                    decoration:
+                                        InputDecoration(labelText: 'Price'),
                                     keyboardType: TextInputType.number,
-                                    onChanged: (value) => variation.price = double.parse(value),
+                                    onChanged: (value) =>
+                                        variation.price = double.parse(value),
                                   ),
                                   TextField(
-                                    decoration: InputDecoration(labelText: 'Sale Price'),
+                                    decoration: InputDecoration(
+                                        labelText: 'Sale Price'),
                                     keyboardType: TextInputType.number,
-                                    onChanged: (value) => variation.salePrice = double.parse(value),
+                                    onChanged: (value) => variation.salePrice =
+                                        double.parse(value),
                                   ),
                                   TextField(
-                                    decoration: InputDecoration(labelText: 'Stock'),
+                                    decoration:
+                                        InputDecoration(labelText: 'Stock'),
                                     keyboardType: TextInputType.number,
-                                    onChanged: (value) => variation.stock = int.parse(value),
+                                    onChanged: (value) =>
+                                        variation.stock = int.parse(value),
                                   ),
                                 ],
                               ),
@@ -480,7 +532,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         );
                       },
                     ),
-
                   ],
                 ),
               ),

@@ -1,43 +1,43 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/category_provider.dart';
-import '../models/category_model.dart';
-import 'add_category_screen.dart';
+import '../../models/brand_model.dart';
+import '../../providers/brand_provider.dart';
+import 'add_brand_screen.dart';
 
-class CategoryScreen extends StatelessWidget {
-  static const routeName = '/categories';
+class BrandScreen extends StatelessWidget {
+  static const routeName = '/brands';
 
   @override
   Widget build(BuildContext context) {
-    final categoryProvider = Provider.of<CategoryProvider>(context);
+    final brandProvider = Provider.of<BrandProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Categories'),
+        title: Text('Brands'),
       ),
-      body: StreamBuilder<List<CategoryModel>>(
-        stream: categoryProvider.streamCategories(),
+      body: StreamBuilder<List<BrandModel>>(
+        stream: brandProvider.streamBrands(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Error loading categories'));
+            return Center(child: Text('Error loading brands'));
           }
-          final categories = snapshot.data ?? [];
+          final brands = snapshot.data ?? [];
           return ListView.builder(
-            itemCount: categories.length,
+            itemCount: brands.length,
             itemBuilder: (context, index) {
-              final category = categories[index];
-              return CategoryItem(category: category);
+              final brand = brands[index];
+              return BrandItem(brand: brand);
             },
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pushNamed(AddCategoryScreen.routeName);
+          Navigator.of(context).pushNamed(AddBrandScreen.routeName);
         },
         child: Icon(Icons.add),
       ),
@@ -45,38 +45,41 @@ class CategoryScreen extends StatelessWidget {
   }
 }
 
-class CategoryItem extends StatelessWidget {
-  final CategoryModel category;
+class BrandItem extends StatelessWidget {
+  final BrandModel brand;
 
-  const CategoryItem({required this.category});
+  const BrandItem({required this.brand});
 
   @override
   Widget build(BuildContext context) {
-    final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+    final brandProvider = Provider.of<BrandProvider>(context, listen: false);
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       elevation: 4,
       child: ListTile(
-        leading: category.image.isNotEmpty
+        leading: brand.image.isNotEmpty
             ? CachedNetworkImage(
-
-          width: 50,
-          height: 50,
-          fit: BoxFit.cover, imageUrl: category.image,
-        )
+                imageUrl: brand.image,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              )
             : Icon(Icons.category, size: 50),
-        title: Text(category.name, style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(brand.name, style: TextStyle(fontWeight: FontWeight.bold)),
         subtitle: GestureDetector(
           onTap: () async {
-            await categoryProvider.updateCategory(category.id, {'isFeatured': !(category.isFeatured ?? false)});
+            await brandProvider.updateBrand(
+                brand.id, {'isFeatured': !(brand.isFeatured ?? false)});
           },
           child: Row(
             children: [
               Text('Featured: '),
               Icon(
-                category.isFeatured ?? false ? Icons.check_circle : Icons.check_circle_outline,
-                color: category.isFeatured ?? false ? Colors.green : Colors.grey,
+                brand.isFeatured ?? false
+                    ? Icons.check_circle
+                    : Icons.check_circle_outline,
+                color: brand.isFeatured ?? false ? Colors.green : Colors.grey,
               ),
             ],
           ),
@@ -87,13 +90,13 @@ class CategoryItem extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.edit, color: Colors.blue),
               onPressed: () {
-                // Navigate to edit category screen
+                // Navigate to edit brand screen
               },
             ),
             IconButton(
               icon: Icon(Icons.delete, color: Colors.red),
               onPressed: () async {
-                await categoryProvider.deleteCategory(category.id);
+                await brandProvider.deleteBrand(brand.id);
               },
             ),
           ],

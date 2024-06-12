@@ -2,24 +2,35 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import '../providers/auth_provider.dart';
+import '../../providers/auth_provider.dart';
 
-class SignUpScreen extends StatefulWidget {
+
+class LoginScreen extends StatefulWidget {
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _username = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  String _email = '';
+  String _password = '';
+
+  void _trySubmit() {
+    final isValid = _formKey.currentState!.validate();
+    if (isValid) {
+      _formKey.currentState!.save();
+      Provider.of<AuthProviders>(context, listen: false).login(_email, _password);
+      if (Provider.of<AuthProviders>(context, listen: false).isLoggedIn) {
+        Navigator.of(context).pushNamed('/HomeScreen');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sign Up'),
+        title: Text('Login'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -28,18 +39,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           child: Column(
             children: <Widget>[
               TextFormField(
-                controller: _username,
-                decoration: InputDecoration(labelText: 'Username'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a username';
-                  }
-                  return null;
-                },
-
-              ),
-              TextFormField(
-                controller: _emailController,
                 decoration: InputDecoration(labelText: 'Email'),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
@@ -48,10 +47,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   }
                   return null;
                 },
-
+                onSaved: (value) {
+                  _email = value!;
+                },
               ),
               TextFormField(
-                controller: _passwordController,
                 decoration: InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: (value) {
@@ -60,18 +60,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   }
                   return null;
                 },
-
+                onSaved: (value) {
+                  _password = value!;
+                },
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () async {
-                  final authProvider = Provider.of<AuthProviders>(context, listen: false);
-                  await authProvider.signup(_emailController.text, _passwordController.text);
-                  if (authProvider.isLoggedIn) {
-                    Navigator.of(context).pushNamed('/HomeScreen');
-                  }
+                onPressed: _trySubmit,
+                child: Text('Login'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/SignUpScreen');
                 },
-                child: Text('Sign Up'),
+                child: Text('Don\'t have an account? Sign Up'),
               ),
             ],
           ),

@@ -30,19 +30,62 @@ class ProductController extends GetxController {
     }
   }
 
-  String? calculateSalePercentage(double originalPrice, double? salePrice) {
-    if (salePrice == null || salePrice <= 0.0) return null;
-    if (originalPrice <= 0) return null;
-    double percentage = ((originalPrice - salePrice) / originalPrice) * 100;
-    return percentage.toStringAsFixed(0);
+  String? calculateSalePercentage(ProductModel product) {
+    double smallestPercentage = double.infinity;
+    double largestPercentage = 0.0;
+
+    void updatePercentages(double originalPrice, double salePrice) {
+      if (originalPrice <= 0 || salePrice <= 0) return;
+      double percentage = ((originalPrice - salePrice) / originalPrice) * 100;
+      if (percentage < smallestPercentage) {
+        smallestPercentage = percentage;
+      }
+      if (percentage > largestPercentage) {
+        largestPercentage = percentage;
+      }
+    }
+
+    if (product.productType == ProductType.single.toString()) {
+      updatePercentages(product.price, product.salesPrice);
+      return smallestPercentage < double.infinity ? '${smallestPercentage
+          .toStringAsFixed(0)}%' : null;
+    } else {
+      for (var variation in product.productVariations!) {
+        updatePercentages(variation.price, variation.salePrice);
+      }
+      if (smallestPercentage == largestPercentage) {
+        return '${largestPercentage.toStringAsFixed(0)}%';
+      } else {
+        return '${smallestPercentage.toStringAsFixed(0)}% - ${largestPercentage
+            .toStringAsFixed(0)}%';
+      }
+    }
   }
   //Check Product Variation Stock Status
-  String getProductStockStatus(int stock) {
-    return stock > 0 ? 'In Stock' : 'Out of Stock';
+
+  String getProductStockStatus(ProductModel product) {
+    if (product.productType == ProductType.single.toString()) {
+      print("Product Stock: ${product.stock}");
+      return product.stock > 0 ? 'In Stock' : 'Out of Stock';
+    } else if (product.productType == ProductType.variable.toString()) {
+      int totalStock = product.productVariations!.fold(0, (total, variation) => total + variation.stock);
+      print("Product Stock: $totalStock");
+      return totalStock > 0 ? 'In Stock' : 'Out of Stock';
+    } else {
+      return 'Unknown Product Type';
+    }
   }
   //Check Product Variation Stock Status
-  Status(int stock) {
-    return stock > 0 ? Colors.green : 'Colors.red';
+  Status(ProductModel product) {
+    if (product.productType == ProductType.single.toString()) {
+      return product.stock > 0 ? Colors.green : Colors.red;
+    } else if (product.productType == ProductType.variable.toString()) {
+      int totalStock = product.productVariations!.fold(0, (total, variation) => total + variation.stock);
+      return totalStock > 0 ? Colors.green : Colors.red;
+    } else {
+      return 'Unknown Product Type';
+    }
+
   }
 
 }

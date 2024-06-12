@@ -7,19 +7,18 @@ import 'package:get/get.dart';
 import 'package:kangleimartadmin/firebase_options.dart';
 import 'package:kangleimartadmin/providers/auth_provider.dart';
 import 'package:kangleimartadmin/providers/product_provider.dart';
-import 'package:kangleimartadmin/screens/add_product_screen.dart';
-import 'package:kangleimartadmin/screens/category_screen.dart';
+import 'package:kangleimartadmin/screens/category/category_screen.dart';
 import 'package:kangleimartadmin/screens/home_screen.dart';
-import 'package:kangleimartadmin/screens/login_screen.dart';
-import 'package:kangleimartadmin/screens/product_screen.dart';
+import 'package:kangleimartadmin/screens/authentication/login_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'providers/brand_provider.dart';
 import 'providers/category_provider.dart';
-import 'screens/add_brand_screen.dart';
-import 'screens/add_category_screen.dart';
-import 'screens/brand_screen.dart';
+import 'screens/brands/add_brand_screen.dart';
+import 'screens/brands/brand_screen.dart';
+import 'screens/category/add_category_screen.dart';
+import 'screens/product/add_product_screen.dart';
+import 'screens/product/product_screen.dart';
 
 
 void main() async {

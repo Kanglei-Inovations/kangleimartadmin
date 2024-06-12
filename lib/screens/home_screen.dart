@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:kangleimartadmin/screens/product_review.dart';
-
-import '../widgets/try_attribute_variation_adding.dart';
-import 'add_category_screen.dart';
-import 'add_product_screen.dart';
-import 'brand_screen.dart';
-import 'category_screen.dart';
-import 'product_screen.dart';
+import 'brands/brand_screen.dart';
+import 'category/category_screen.dart';
+import 'product/product_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -67,21 +61,6 @@ class HomeScreen extends StatelessWidget {
               label: 'Customer',
               onTap: () {
                 Navigator.of(context).pushNamed(ProductScreen.routeName);
-              },
-            ),
-            HomeButton(
-              icon: Icons.supervised_user_circle,
-              label: 'Review And Ratings',
-              onTap: () {
-                Get.to(ProductReviewScreen());
-              },
-            ),
-
-            HomeButton(
-              icon: Icons.supervised_user_circle,
-              label: 'Attribute and Variation',
-              onTap: () {
-                Get.to(ProductVariationWidget());
               },
             ),
           ],

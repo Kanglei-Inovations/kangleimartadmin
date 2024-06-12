@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/product_model.dart';
-import '../providers/product_provider.dart';
+import '../../models/product_model.dart';
+import '../../providers/product_provider.dart';
 import 'add_product_screen.dart';
-import 'single_product_screen.dart'; // Import the single product screen
+import 'single_product_screen.dart';
 
 class ProductScreen extends StatelessWidget {
   static const routeName = '/products';
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final productProvider =
+        Provider.of<ProductProvider>(context, listen: false);
 
+    return Scaffold(
       appBar: AppBar(
         title: Text('Products'),
       ),
@@ -33,14 +35,16 @@ class ProductScreen extends StatelessWidget {
                 double discountPercentage = 0;
                 if (product.price > 0) {
                   discountPercentage =
-                      ((product.price - product.salesPrice) / product.price) * 100;
+                      ((product.price - product.salesPrice) / product.price) *
+                          100;
                 }
 
                 return FutureBuilder<String>(
                   future: Provider.of<ProductProvider>(context, listen: false)
                       .getCategoryName(product.categoryId ?? ''),
                   builder: (context, categorySnapshot) {
-                    if (categorySnapshot.connectionState == ConnectionState.waiting) {
+                    if (categorySnapshot.connectionState ==
+                        ConnectionState.waiting) {
                       return ListTile(
                         title: Text(product.title),
                         subtitle: Text('Loading category...'),
@@ -64,10 +68,11 @@ class ProductScreen extends StatelessWidget {
                         child: ListTile(
                           leading: CircleAvatar(
                             backgroundImage: product.images != null &&
-                                product.images!.isNotEmpty
+                                    product.images!.isNotEmpty
                                 ? NetworkImage(product.images!.first)
                                 : null,
-                            child: product.images == null || product.images!.isEmpty
+                            child: product.images == null ||
+                                    product.images!.isEmpty
                                 ? Icon(Icons.image)
                                 : null,
                           ),
@@ -79,14 +84,16 @@ class ProductScreen extends StatelessWidget {
                                 TextSpan(
                                   children: [
                                     TextSpan(
-                                      text: 'Price:  ${product.price.toStringAsFixed(2)} ',
+                                      text:
+                                          'Price:  ${product.price.toStringAsFixed(2)} ',
                                       style: TextStyle(
                                         decoration: TextDecoration.lineThrough,
                                         color: Colors.red,
                                       ),
                                     ),
                                     TextSpan(
-                                      text: ' ₹ ${product.salesPrice.toStringAsFixed(2)}',
+                                      text:
+                                          ' ₹ ${product.salesPrice.toStringAsFixed(2)}',
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
@@ -96,7 +103,7 @@ class ProductScreen extends StatelessWidget {
                                     if (discountPercentage > 0)
                                       TextSpan(
                                         text:
-                                        ' (${discountPercentage.toStringAsFixed(1)}% OFF)',
+                                            ' (${discountPercentage.toStringAsFixed(1)}% OFF)',
                                         style: TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold,
@@ -107,20 +114,40 @@ class ProductScreen extends StatelessWidget {
                                 ),
                               ),
                               Text('Stock: ${product.stock}'),
-                              Text('Category: ${categorySnapshot.data ?? 'N/A'}'),
+                              Text(
+                                  'Category: ${categorySnapshot.data ?? 'N/A'}'),
+                              Row(
+                                children: [
+                                  Text("Visible Product:"),
+                                  IconButton(
+                                    icon: product.isFeatured
+                                        ? Icon(
+                                            Icons.remove_red_eye_outlined,
+                                            color: Colors.green,
+                                          )
+                                        : Icon(
+                                            Icons.remove_red_eye_outlined,
+                                            color: Colors.red,
+                                          ),
+                                    onPressed: () async {
+                                      final newValue = !product.isFeatured;
+                                      await Provider.of<ProductProvider>(
+                                              context,
+                                              listen: false)
+                                          .updateIsFeatured(
+                                              product.id, newValue);
+                                    },
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                           trailing: IconButton(
-                            icon: product.isFeatured
-                                ? Icon(Icons.remove_red_eye_outlined, color: Colors.green,)
-                                : Icon(Icons.remove_red_eye_outlined, color: Colors.red,),
+                            icon: Icon(Icons.delete, color: Colors.red),
                             onPressed: () async {
-                              final newValue = !product.isFeatured;
-                              await Provider.of<ProductProvider>(context, listen: false)
-                                  .updateIsFeatured(product.id, newValue);
+                              await productProvider.deleteProduct(product.id);
                             },
                           ),
-
                         ),
                       );
                     }

@@ -77,6 +77,15 @@ class ProductProvider with ChangeNotifier {
       }
     }
   }
+  Future<void> deleteProduct(String id) async {
+    try {
+      await _db.collection('products').doc(id).delete();
+      notifyListeners();
+    } catch (e) {
+      print('Error deleting product: $e');
+      throw e;
+    }
+  }
   Future<String> getBrandImage(String brandId) async {
     if (_brandNames.containsKey(brandId)) {
       return _brandNames[brandId]!;
