@@ -47,6 +47,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
       ],
       child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'KangleiMart Admin',
         theme: ThemeData(
           primarySwatch: Colors.blue,
