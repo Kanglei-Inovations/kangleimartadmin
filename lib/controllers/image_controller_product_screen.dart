@@ -57,7 +57,4 @@ class ImageControllerProductScreen extends GetxController {
       ),
     );
   }
-
-
-
 }

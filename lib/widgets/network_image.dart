@@ -1,12 +1,13 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 
 class NetworkImageWidget extends StatelessWidget {
   const NetworkImageWidget({
-    Key? key,
+    super.key,
     required this.image,
-  }) : super(key: key);
+  });
 
   final String image;
 
@@ -19,7 +20,7 @@ class NetworkImageWidget extends StatelessWidget {
         image,
         loadingBuilder: (context, child, progress) {
           if (progress == null) return child;
-          return CircularProgressIndicator();
+          return FancyShimmerImage(imageUrl: image,);
         },
         errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
       );
@@ -28,7 +29,8 @@ class NetworkImageWidget extends StatelessWidget {
       return CachedNetworkImage(
         imageUrl: image,
         progressIndicatorBuilder: (_, __, downloadProgress) =>
-            Center(child: CircularProgressIndicator(value: downloadProgress.progress, color: Colors.green)),
+            Center(child: FancyShimmerImage(imageUrl: image,)),
+            //CircularProgressIndicator(value: downloadProgress.progress, color: Colors.green)),
       );
     }
   }

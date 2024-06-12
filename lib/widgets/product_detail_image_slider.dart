@@ -8,10 +8,10 @@ import 'network_image.dart';
 
 class ProductDetailImageSlider extends StatelessWidget {
   ProductDetailImageSlider({
-    Key? key,
+    super.key,
     required this.product,
     required this.selectedProductImage,
-  }) : super(key: key);
+  });
 
   final ProductModel product;
   final RxString selectedProductImage;
@@ -28,13 +28,13 @@ class ProductDetailImageSlider extends StatelessWidget {
       if (index != -1) {
         _scrollController.animateTo(
           index * 85.0, // Approximate width of each item + spacing
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
       }
     });
 
-    return Container(
+    return SizedBox(
       height: 300,
       child: Stack(
         children: [
