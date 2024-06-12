@@ -48,9 +48,10 @@ dependencies:
   provider:
   get:
   intl:
-  # edia and Image
+  # edit and Image
   cached_network_image: ^3.3.1
   image_picker:
+  photo_view:
   # product Specific
   readmore: ^2.1.0
   flutter_rating_bar:

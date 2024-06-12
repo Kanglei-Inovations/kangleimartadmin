@@ -2,8 +2,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:photo_view/photo_view.dart';
 
 import '../models/product_model.dart';
+import '../widgets/network_image.dart';
 
 class ImageControllerProductScreen extends GetxController {
   static ImageControllerProductScreen get instance => Get.find();
@@ -27,25 +29,27 @@ class ImageControllerProductScreen extends GetxController {
     }
     return images.toList();
   }
+
   void showEnlargedImage(String image) {
     Get.to(
       fullscreenDialog: true,
-          () => Dialog.fullscreen(
-        child: Column(
+          () => Scaffold(
+        body: Stack(
           children: [
-            Expanded(
-              child: Center(
-                child: CachedNetworkImage(imageUrl: image),
+            Center(
+              child: PhotoView(
+                imageProvider: NetworkImage(image),
+                backgroundDecoration: BoxDecoration(
+                  color: Colors.white,
+                ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: OutlinedButton(
-                  onPressed: () => Get.back(),
-                  child: const Text('Close'),
-                ),
+            Positioned(
+              top: 40,
+              right: 20,
+              child: IconButton(
+                icon: Icon(Icons.close, color: Colors.black, size: 30),
+                onPressed: () => Get.back(),
               ),
             ),
           ],
