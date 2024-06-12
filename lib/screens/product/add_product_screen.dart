@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -320,12 +321,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Image.file(
+                          child:  kIsWeb?
+                          Image.network(_imagePaths[index]):Image.file(
                             File(_imagePaths[index]),
                             width: 100,
                             height: 100,
                             fit: BoxFit.fill,
                           ),
+
                         );
                       },
                     ),
