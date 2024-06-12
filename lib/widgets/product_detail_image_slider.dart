@@ -5,20 +5,35 @@ import 'package:get/get.dart';
 import '../controllers/image_controller_product_screen.dart';
 import '../models/product_model.dart';
 import 'network_image.dart';
+
 class ProductDetailImageSlider extends StatelessWidget {
-  const ProductDetailImageSlider({
+  ProductDetailImageSlider({
     Key? key,
     required this.product,
-    required this.selectedProductImage, // Add selectedProductImage parameter
+    required this.selectedProductImage,
   }) : super(key: key);
 
   final ProductModel product;
-  final RxString selectedProductImage; // Add selectedProductImage
+  final RxString selectedProductImage;
+  final ScrollController _scrollController = ScrollController(); // Add ScrollController
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(ImageControllerProductScreen());
     final images = controller.getAllProductImages(product);
+
+    // Scroll to the selected image index when selectedProductImage changes
+    selectedProductImage.listen((image) {
+      final index = images.indexOf(image);
+      if (index != -1) {
+        _scrollController.animateTo(
+          index * 85.0, // Approximate width of each item + spacing
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+
     return Container(
       height: 300,
       child: Stack(
@@ -29,7 +44,7 @@ class ProductDetailImageSlider extends StatelessWidget {
               padding: const EdgeInsets.all(15),
               child: Center(
                 child: Obx(() {
-                  final image = selectedProductImage.value; // Use selectedProductImage
+                  final image = selectedProductImage.value;
                   return GestureDetector(
                     onTap: () => controller.showEnlargedImage(image),
                     child: NetworkImageWidget(image: image),
@@ -45,30 +60,35 @@ class ProductDetailImageSlider extends StatelessWidget {
             child: SizedBox(
               height: 80,
               child: ListView.separated(
+                controller: _scrollController, // Attach the ScrollController
                 itemCount: images.length,
                 shrinkWrap: true,
                 physics: const AlwaysScrollableScrollPhysics(),
                 scrollDirection: Axis.horizontal,
                 separatorBuilder: (_, __) => const SizedBox(width: 5),
-                itemBuilder: (_, index) => InkWell(
-                  onTap: () {
-                    selectedProductImage.value = images[index]; // Update selectedProductImage
-                  },
-                  child: Container(
-                    width: 80,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: selectedProductImage.value == images[index] ? Colors.greenAccent : Colors.transparent,
+                itemBuilder: (_, index) {
+                  return Obx(() {
+                    return InkWell(
+                      onTap: () {
+                        selectedProductImage.value = images[index];
+                        print('${images[index]} = ${selectedProductImage.value}');
+                      },
+                      child: Container(
+                        width: 80,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: selectedProductImage.value == images[index] ? Colors.greenAccent : Colors.transparent,
+                          ),
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: NetworkImageWidget(image: images[index]),
+                        ),
                       ),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: NetworkImageWidget(image: images[index]),
-
-                    ),
-                  ),
-                ),
+                    );
+                  });
+                },
               ),
             ),
           ),
@@ -77,4 +97,3 @@ class ProductDetailImageSlider extends StatelessWidget {
     );
   }
 }
-
