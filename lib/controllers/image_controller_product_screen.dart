@@ -45,7 +45,7 @@ class ImageControllerProductScreen extends GetxController {
               ),
             ),
             Positioned(
-              top: 40,
+              top: 60,
               right: 20,
               child: IconButton(
                 icon: Icon(Icons.close, color: Colors.black, size: 30),
