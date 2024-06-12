@@ -12,7 +12,7 @@ class NetworkImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
+
     if (kIsWeb) {
       // Display image using Image.network for web
       return Image.network(
