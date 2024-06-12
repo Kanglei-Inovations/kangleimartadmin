@@ -29,7 +29,7 @@ class NetworkImageWidget extends StatelessWidget {
       return CachedNetworkImage(
         imageUrl: image,
         progressIndicatorBuilder: (_, __, downloadProgress) =>
-            Center(child: FancyShimmerImage(imageUrl: image,)),
+            Center(child: FancyShimmerImage(imageUrl: image,boxFit: BoxFit.fill,)),
             //CircularProgressIndicator(value: downloadProgress.progress, color: Colors.green)),
       );
     }
