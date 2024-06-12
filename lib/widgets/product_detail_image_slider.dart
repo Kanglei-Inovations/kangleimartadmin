@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 import '../controllers/image_controller_product_screen.dart';
 import '../models/product_model.dart';
-
+import 'network_image.dart';
 class ProductDetailImageSlider extends StatelessWidget {
   const ProductDetailImageSlider({
     Key? key,
@@ -32,11 +32,7 @@ class ProductDetailImageSlider extends StatelessWidget {
                   final image = selectedProductImage.value; // Use selectedProductImage
                   return GestureDetector(
                     onTap: () => controller.showEnlargedImage(image),
-                    child: CachedNetworkImage(
-                      imageUrl: image,
-                      progressIndicatorBuilder: (_, __, downloadProgress) =>
-                          Center(child: CircularProgressIndicator(value: downloadProgress.progress, color: Colors.green)),
-                    ),
+                    child: NetworkImage(image: image),
                   );
                 }),
               ),
@@ -85,3 +81,4 @@ class ProductDetailImageSlider extends StatelessWidget {
     );
   }
 }
+
