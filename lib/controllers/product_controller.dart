@@ -66,11 +66,11 @@ class ProductController extends GetxController {
   String getProductStockStatus(ProductModel product) {
     if (product.productType == ProductType.single.toString()) {
       print("Product Stock: ${product.stock}");
-      return product.stock > 50 ? 'In Stock' : 'Out of Stock';
+      return product.stock >= 10 ? 'In Stock' : 'Out of Stock';
     } else if (product.productType == ProductType.variable.toString()) {
       int totalStock = product.productVariations!.fold(0, (total, variation) => total + variation.stock);
       print("Product Stock: $totalStock");
-      return totalStock > 0 ? 'In Stock' : 'Out of Stock';
+      return totalStock >= 10 ? 'In Stock' : 'Out of Stock';
     } else {
       return 'Unknown Product Type';
     }
