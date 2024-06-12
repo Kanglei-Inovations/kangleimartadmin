@@ -196,47 +196,10 @@ class SingleProductScreen extends StatelessWidget {
                           }
                         },
                       ),
+                    if (product.brandId!.isNotEmpty)
+                    SizedBox(height: 10),
 
-                    //Category ........................
-                    if (product.categoryId!.isNotEmpty) SizedBox(height: 8),
-                    if (product.categoryId!.isNotEmpty)
-                      FutureBuilder<String>(
-                        future: productProvider
-                            .getCategoryName(product.categoryId ?? ''),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Text(
-                              'Category: Loading...',
-                              style: TextStyle(fontSize: 18),
-                            );
-                          } else if (snapshot.hasError) {
-                            return Text(
-                              'Category: Error loading category',
-                              style: TextStyle(fontSize: 18),
-                            );
-                          } else {
-                            return Row(
-                              children: [
-                                Text('Category:',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold)),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text(
-                                  '${snapshot.data}',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ],
-                            );
-                          }
-                        },
-                      ),
-                    SizedBox(height: 16),
 
-                   
                     if (product.productType == ProductType.variable.toString())
                       Column(
                         children: [
