@@ -244,9 +244,18 @@ class SingleProductScreen extends StatelessWidget {
                                                                   if (selected &&
                                                                       available) {
                                                                     controller.onAttributesSelected(product,attribute.name ??'', attributeValue);
-                                                                    // Update imagecontroller.selectProductImage
+                                                                    /// Update imagecontroller.selectProductImage
                                                                     imagecontroller.selectedProductImage.value = controller.selectedVariation.value.image;
 
+                                                                  /// i have added this code to unselect, selected variant
+                                                                  } else {
+                                                                    controller.selectedAttributes.remove(attribute.name);
+                                                                    if (controller.selectedAttributes.isEmpty) {
+                                                                      imagecontroller.selectedProductImage.value =
+                                                                          product.images!.first;
+                                                                    } else {
+                                                                      controller.onAttributesSelected(product, attribute.name ?? '', '');
+                                                                    }
                                                                   }
                                                                 }
                                                               : null);

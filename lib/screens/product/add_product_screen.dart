@@ -174,7 +174,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         sku: productType == 'ProductType.single' ? _skuController.text : '',
         title: _titleController.text,
         description: _descriptionController.text,
-        price: price ?? double.parse(' '),
+        price: price ?? 0.0,
         thumbnail: '',
         stock: stock ?? 0,
         salesPrice: salesPrice ?? 0.0,
@@ -461,6 +461,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 child: Column(
                   children: [
                     TextField(
+                      textCapitalization: TextCapitalization.words,
                       controller: attributeNameController,
                       decoration: const InputDecoration(
                           labelText: 'Attribute Name (e.g., Color, Size)'),
@@ -472,6 +473,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       children: [
                         Expanded(
                           child: TextField(
+                            textCapitalization: TextCapitalization.words,
                             controller: attributeValuesController,
                             decoration: const InputDecoration(
                                 labelText:
@@ -491,8 +493,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          child: Text('Add'),
                           onPressed: addAttribute,
+                          child: const Text('Add'),
                         ),
                       ],
                     ),
@@ -501,15 +503,30 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     ),
                     ListView.builder(
                       shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.zero,
                       itemCount: attributes.length,
                       itemBuilder: (context, index) {
                         final attribute = attributes[index];
-                        return ListTile(
-                          title: Text(
-                              '${attribute.name} (${attribute.values!.join(', ')})'),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () => removeAttribute(index),
+                        return Card(
+                          margin: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Padding(
+                              padding: const EdgeInsets.only(left: 10.0),
+                              child: Text(
+                                  '${attribute.name} (${attribute.values!.join(', ')})'),
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.red,
+                              ),
+                              onPressed: () => removeAttribute(index),
+                            ),
                           ),
                         );
                       },
@@ -555,15 +572,21 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                       Expanded(
                                         child: TextField(
                                           controller: TextEditingController(
-                                            text: _selectedImageUrls.isNotEmpty ? _selectedImageUrls.first : '',
+                                            text: _selectedImageUrls.isNotEmpty
+                                                ? _selectedImageUrls.first
+                                                : '',
                                           ),
-                                          decoration: InputDecoration(labelText: 'Image URL'),
+                                          decoration: InputDecoration(
+                                              labelText: 'Image URL'),
                                           readOnly: true,
                                         ),
                                       ),
                                       IconButton(
                                         onPressed: () async {
-                                          List<String> urls = await productProvider.pickandUpload('product_images');
+                                          List<String> urls =
+                                              await productProvider
+                                                  .pickandUpload(
+                                                      'product_images');
                                           if (urls.isNotEmpty) {
                                             setState(() {
                                               _selectedImageUrls.addAll(urls);
@@ -586,40 +609,72 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                     decoration:
                                         InputDecoration(labelText: 'Price'),
                                     keyboardType: TextInputType.number,
-                                    onChanged: (value) =>
-                                        variation.price = double.parse(value),
+                                    onChanged: (value){
+                                      try {
+                                        variation.price = double.parse(value);
+                                      } catch (e) {
+                                        variation.price = 0.0; // Or handle the error appropriately
+                                        print('Invalid input for price: $value');
+                                      }
+                                    }
+
+                                    // =>
+                                    //     variation.price = double.parse(value),
                                   ),
                                   TextField(
                                     controller: variation.salePriceController,
                                     decoration: InputDecoration(
                                         labelText: 'Sale Price'),
                                     keyboardType: TextInputType.number,
-                                    onChanged: (value) => variation.salePrice =
-                                        double.parse(value),
+                                    onChanged: (value) {
+                                      try {
+                                        variation.salePrice =
+                                            double.parse(value);
+                                      } catch (e) {
+                                        variation.salePrice =
+                                            0.0; // Or handle the error appropriately
+                                        print(
+                                            'Invalid input for sale price: $value');
+                                      }
+                                    },
+                                    // => variation.salePrice =
+                                    //     double.parse(value),
                                   ),
                                   TextField(
                                     controller: variation.stockController,
                                     decoration:
                                         InputDecoration(labelText: 'Stock'),
                                     keyboardType: TextInputType.number,
-                                    onChanged: (value) =>
-                                        variation.stock = int.parse(value),
+                                    onChanged: (value) {
+                                      try {
+                                        variation.stock = int.parse(value);
+                                      } catch (e) {
+                                        variation.stock = 0; // Or handle the error appropriately
+                                        print('Invalid input for sale price: $value');
+                                      }
+                                    }
+
+                                    // =>
+                                    //     variation.stock = int.parse(value),
                                   ),
                                   SizedBox(
                                     height: 10,
                                   ),
                                   MaterialButton(
-                                    height: 20,
-                                    color: Colors.red,
-                                    textColor: Colors.white,
-                                    padding: EdgeInsets.all(16.0),
-                                    splashColor: Colors.grey,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    onPressed: () => deleteVariation(index),
-                                    child: Text('Delete Product ${index + 1}'),
-                                  ),
+                                      height: 10,
+                                      minWidth: 10,
+                                      color: Colors.red,
+                                      textColor: Colors.white,
+                                      padding: EdgeInsets.all(16.0),
+                                      splashColor: Colors.grey,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
+                                      onPressed: () => deleteVariation(index),
+                                      child: Icon(Icons.delete_outline_rounded)
+                                      //Text('Delete Product ${index + 1}'),
+                                      ),
                                 ],
                               ),
                             ),
@@ -637,11 +692,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
       bottomNavigationBar: Container(
         margin: const EdgeInsets.all(10),
         child: _isLoading
-            ? const Column(
+            ? Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   LinearProgressIndicator(
-                    /// value: _uploadProgress / 100,
+                    value: _uploadProgress / 100,
                     minHeight: 10,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
@@ -652,12 +707,33 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       fontSize: 16,
                     ),
                   ),
-
-                  /// Text('${_uploadProgress.toStringAsFixed(0)}% Complete'),
-                  ///  SizedBox(height: 10),
-                  ///  TextButton(
-                  ///    onPressed: () {}, // Optional: Add cancel button functionality
-                  ///    child: Text('Cancel'), ),
+                  SizedBox(height: 10),
+                  Text('${_uploadProgress.toStringAsFixed(0)}% Complete'),
+                  SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        setState(() {
+                          _isLoading = false;
+                          _imagePaths.clear();
+                          _titleController.clear();
+                          _descriptionController.clear();
+                          _priceController.clear();
+                          _salespriceController.clear();
+                          _stockController.clear();
+                          _skuController.clear();
+                          _brandCategory = null;
+                          _selectedCategory = null;
+                          _isFeatured = false;
+                          attributes.clear();
+                          variations.clear();
+                          attributeNameController.clear();
+                          attributeValuesController.clear();
+                        });
+                      });
+                    }, // Optional: Add cancel button functionality
+                    child: Text('Cancel'),
+                  ),
                 ],
               )
             : MaterialButton(
