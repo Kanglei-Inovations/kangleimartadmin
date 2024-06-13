@@ -1,8 +1,9 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
 import '../models/category_model.dart';
 import '../models/product_model.dart';
 
@@ -15,10 +16,31 @@ class ProductProvider with ChangeNotifier {
   List<ProductModel> get products {
     return [..._products];
   }
+  final ImagePicker _picker = ImagePicker();
 
   Stream<List<ProductModel>> streamProducts() {
     return _db.collection('products').snapshots().map((snapshot) =>
         snapshot.docs.map((doc) => ProductModel.fromSnapshot(doc)).toList());
+  }
+
+  Future<List<String>> pickandUpload(String location) async {
+    final pickedFiles = await _picker.pickMultiImage();
+    if (pickedFiles != null) {
+      List<String> downloadUrls = [];
+      for (var file in pickedFiles) {
+        String fileName = path.basename(file.path);
+        File imageFile = File(file.path);
+        try {
+          TaskSnapshot snapshot = await _storage.ref('$location/$fileName').putFile(imageFile);
+          String downloadUrl = await snapshot.ref.getDownloadURL();
+          downloadUrls.add(downloadUrl);
+        } catch (e) {
+          print('Error uploading image: $e');
+        }
+      }
+      return downloadUrls;
+    }
+    return [];
   }
 
   Future<void> addProduct(ProductModel product, List<String> imagePaths) async {
@@ -53,6 +75,7 @@ class ProductProvider with ChangeNotifier {
     }
     return imageUrls;
   }
+
   Future<void> updateIsFeatured(String id, bool isFeatured) async {
     try {
       await _db.collection('products').doc(id).update({'IsFeatured': isFeatured});
@@ -62,12 +85,12 @@ class ProductProvider with ChangeNotifier {
       throw e;
     }
   }
+
   Future<String> getCategoryName(String categoryId) async {
     if (_categoryNames.containsKey(categoryId)) {
       return _categoryNames[categoryId]!;
     } else {
-      DocumentSnapshot<Map<String, dynamic>> snapshot =
-      await _db.collection('categories').doc(categoryId).get();
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('categories').doc(categoryId).get();
       if (snapshot.exists) {
         CategoryModel category = CategoryModel.fromSnapshot(snapshot);
         _categoryNames[categoryId] = category.name;
@@ -77,6 +100,7 @@ class ProductProvider with ChangeNotifier {
       }
     }
   }
+
   Future<void> deleteProduct(String id) async {
     try {
       await _db.collection('products').doc(id).delete();
@@ -86,12 +110,12 @@ class ProductProvider with ChangeNotifier {
       throw e;
     }
   }
+
   Future<String> getBrandImage(String brandId) async {
     if (_brandNames.containsKey(brandId)) {
       return _brandNames[brandId]!;
     } else {
-      DocumentSnapshot<Map<String, dynamic>> snapshot =
-      await _db.collection('brands').doc(brandId).get();
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('brands').doc(brandId).get();
       if (snapshot.exists) {
         _brandNames[brandId] = snapshot.data()?['Image'] ?? 'Unknown';
         return _brandNames[brandId]!;
@@ -105,8 +129,7 @@ class ProductProvider with ChangeNotifier {
     if (_brandNames.containsKey(brandId)) {
       return _brandNames[brandId]!;
     } else {
-      DocumentSnapshot<Map<String, dynamic>> snapshot =
-      await _db.collection('brands').doc(brandId).get();
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await _db.collection('brands').doc(brandId).get();
       if (snapshot.exists) {
         _brandNames[brandId] = snapshot.data()?['Name'] ?? 'Unknown';
         return _brandNames[brandId]!;
@@ -115,7 +138,4 @@ class ProductProvider with ChangeNotifier {
       }
     }
   }
-
-
-
 }

@@ -39,7 +39,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController attributeNameController = TextEditingController();
   final TextEditingController attributeValuesController =
       TextEditingController();
-
+  List<String> _selectedImageUrls = [];
   @override
   void dispose() {
     attributeNameController.dispose();
@@ -194,6 +194,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final productProvider = Provider.of<ProductProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Product'),
@@ -274,7 +275,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 stream: Provider.of<BrandProvider>(context).streamBrands(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: Container());
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
@@ -526,12 +527,29 @@ class _AddProductScreenState extends State<AddProductScreen> {
                                         InputDecoration(labelText: 'SKU'),
                                     onChanged: (value) => variation.sku = value,
                                   ),
-                                  TextField(
-                                    controller: variation.imageController,
-                                    decoration:
-                                        InputDecoration(labelText: 'Image URL'),
-                                    onChanged: (value) =>
-                                        variation.image = value,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: TextEditingController(
+                                            text: _selectedImageUrls.isNotEmpty ? _selectedImageUrls.first : '',
+                                          ),
+                                          decoration: InputDecoration(labelText: 'Image URL'),
+                                          readOnly: true,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () async {
+                                          List<String> urls = await productProvider.pickandUpload('product_images');
+                                          if (urls.isNotEmpty) {
+                                            setState(() {
+                                              _selectedImageUrls.addAll(urls);
+                                            });
+                                          }
+                                        },
+                                        icon: Icon(Icons.add_a_photo),
+                                      ),
+                                    ],
                                   ),
                                   TextField(
                                     controller: variation.descriptionController,
