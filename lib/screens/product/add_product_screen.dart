@@ -695,10 +695,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  LinearProgressIndicator(
-                    value: _uploadProgress / 100,
-                    minHeight: 10,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: LinearProgressIndicator(
+                     /// value: _uploadProgress / 100,
+                      minHeight: 10,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
                   ),
                   SizedBox(height: 10),
                   Text(
@@ -707,8 +710,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       fontSize: 16,
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Text('${_uploadProgress.toStringAsFixed(0)}% Complete'),
+                  ///SizedBox(height: 10),
+                  ///Text('${_uploadProgress.toStringAsFixed(0)}% Complete'),
                   SizedBox(height: 10),
                   TextButton(
                     onPressed: () {
