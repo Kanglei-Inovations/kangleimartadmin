@@ -735,7 +735,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
                         });
                       });
                     }, // Optional: Add cancel button functionality
-                    child: Text('Cancel'),
+                    child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: const Text('Cancel')),
                   ),
                 ],
               )
