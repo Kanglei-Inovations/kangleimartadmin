@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class ProductVariationModel {
   final String id;
   String sku;
@@ -7,6 +9,12 @@ class ProductVariationModel {
   double salePrice;
   int stock;
   Map<String, String> attributeValues;
+  TextEditingController skuController;
+  TextEditingController imageController;
+  TextEditingController descriptionController;
+  TextEditingController priceController;
+  TextEditingController salePriceController;
+  TextEditingController stockController;
 
   ProductVariationModel({
     required this.id,
@@ -17,7 +25,23 @@ class ProductVariationModel {
     this.salePrice = 0.0,
     this.stock = 0,
     required this.attributeValues,
-  });
+  }):  skuController = TextEditingController(text: sku),
+        imageController = TextEditingController(text: image),
+        descriptionController = TextEditingController(text: description),
+        priceController = TextEditingController(text: price.toString()),
+        salePriceController = TextEditingController(text: salePrice.toString()),
+        stockController = TextEditingController(text: stock.toString());
+
+  // Add a method to dispose the controllers
+  void dispose() {
+    skuController.dispose();
+    imageController.dispose();
+    descriptionController.dispose();
+    priceController.dispose();
+    salePriceController.dispose();
+    stockController.dispose();
+  }
+
 
   // Create an empty function for clean code
   static ProductVariationModel empty() => ProductVariationModel(id: '', attributeValues: {});
@@ -39,7 +63,7 @@ class ProductVariationModel {
 //map json document snapshot from firebase to userModel
   factory ProductVariationModel.fromJson(Map<String, dynamic> document) {
     final data = document;
-    if (data.isEmpty) return ProductVariationModel.empty();;
+    if (data.isEmpty) return ProductVariationModel.empty();
     return ProductVariationModel(
       id: data['Id'],
       sku: data['SKU'],
