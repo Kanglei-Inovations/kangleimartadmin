@@ -58,6 +58,7 @@ dependencies:
   shimmer_effect:
     #Package for easy use of images that are automatically cacheable and have a beautiful on the fly (but it can be configured) shimmer effect while loading
   fancy_shimmer_image: ^2.0.3
+  percent_indicator:
 
 dev_dependencies:
   flutter_test:

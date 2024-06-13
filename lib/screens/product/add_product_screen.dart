@@ -32,6 +32,10 @@ class _AddProductScreenState extends State<AddProductScreen> {
   List<String> _imagePaths = [];
   final ImagePicker _picker = ImagePicker();
   bool _isFeatured = false;
+  bool _isLoading = false;
+  int _currentUploadIndex = 0;
+  double _uploadProgress = 0.0;
+
   String productType = 'ProductType.single';
 
   final List<ProductAttributeModel> attributes = [];
@@ -140,7 +144,15 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   void _submit() async {
+    setState(() {
+      _currentUploadIndex = 0;
+      _uploadProgress = 0.0;
+    });
     if (_formKey.currentState!.validate() && _imagePaths.isNotEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+
       _formKey.currentState!.save();
 
       double? price;
@@ -162,7 +174,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         sku: productType == 'ProductType.single' ? _skuController.text : '',
         title: _titleController.text,
         description: _descriptionController.text,
-        price: price ?? 0.0,
+        price: price ?? double.parse(' '),
         thumbnail: '',
         stock: stock ?? 0,
         salesPrice: salesPrice ?? 0.0,
@@ -174,11 +186,22 @@ class _AddProductScreenState extends State<AddProductScreen> {
         productAttributes: attributes,
         productVariations: variations,
       );
-
-      print(newProduct.toJson());
-      await Provider.of<ProductProvider>(context, listen: false)
-          .addProduct(newProduct, _imagePaths);
-      Navigator.of(context).pop();
+      try {
+        print(newProduct.toJson());
+        await Provider.of<ProductProvider>(context, listen: false)
+            .addProduct(newProduct, _imagePaths);
+        Navigator.of(context).pop();
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add product. Please try again.')),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+          _currentUploadIndex = 0;
+          _uploadProgress = 0.0;
+        });
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please Enter all Required field')),
@@ -242,7 +265,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     Provider.of<CategoryProvider>(context).streamCategories(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return Center(child: Container());
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
@@ -282,7 +305,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     final brands = snapshot.data ?? [];
                     return DropdownButtonFormField<String>(
                       value: _brandCategory,
-                      decoration: InputDecoration(labelText: 'Brand'),
+                      decoration: const InputDecoration(labelText: 'Brand'),
                       items: brands.map((brand) {
                         return DropdownMenuItem<String>(
                           value: brand.id,
@@ -612,19 +635,43 @@ class _AddProductScreenState extends State<AddProductScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        margin: EdgeInsets.all(10),
-        child: MaterialButton(
-          height: 20,
-          color: Colors.green,
-          textColor: Colors.white,
-          padding: EdgeInsets.all(16.0),
-          splashColor: Colors.grey,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          onPressed: _submit,
-          child: Text('Add Product'),
-        ),
+        margin: const EdgeInsets.all(10),
+        child: _isLoading
+            ? const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  LinearProgressIndicator(
+                    /// value: _uploadProgress / 100,
+                    minHeight: 10,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    'Uploading product...',
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+
+                  /// Text('${_uploadProgress.toStringAsFixed(0)}% Complete'),
+                  ///  SizedBox(height: 10),
+                  ///  TextButton(
+                  ///    onPressed: () {}, // Optional: Add cancel button functionality
+                  ///    child: Text('Cancel'), ),
+                ],
+              )
+            : MaterialButton(
+                height: 20,
+                color: Colors.green,
+                textColor: Colors.white,
+                padding: EdgeInsets.all(16.0),
+                splashColor: Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                onPressed: _submit,
+                child: Text('Add Product'),
+              ),
       ),
     );
   }
